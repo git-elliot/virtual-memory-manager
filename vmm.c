@@ -15,11 +15,6 @@ int main(){
   uint16_t address;
   FILE *logicalAddressStream;
 
-<<<<<<< HEAD
-  printf("Enter a address\n");
-  scanf("%hu",&address);
-  printf("\nPage number : %hu and Offset : %hu",extractPageNumber(address),extractOffset(address));
-=======
   logicalAddressStream = fopen("address.txt","r");
   if(logicalAddressStream == NULL){
   	printf("Error opening the address file");
@@ -31,6 +26,5 @@ int main(){
   	}
   }
   fclose(logicalAddressStream);
->>>>>>> 5bcdf9404e63b1385f8bb862f4b0ea1635906afd
   return 0;
 }
