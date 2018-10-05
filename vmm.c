@@ -14,23 +14,18 @@ unsigned short int extractOffset(uint16_t num){
 int main(){
   uint16_t address;
   FILE *logicalAddressStream;
+  int i=0;
 
-<<<<<<< HEAD
-  printf("Enter a address\n");
-  scanf("%hu",&address);
-  printf("\nPage number : %hu and Offset : %hu",extractPageNumber(address),extractOffset(address));
-=======
   logicalAddressStream = fopen("address.txt","r");
   if(logicalAddressStream == NULL){
   	printf("Error opening the address file");
   	exit(1);
   }
   else{
-  	while(fscanf(logicalAddressStream,"%x",&address) != EOF){
-  		  printf("\nPage number : %x and Offset : %x",extractPageNumber(address),extractOffset(address));
+  	while(fscanf(logicalAddressStream,"%hu",&address) != EOF){
+  		  printf("\n%dPage number : %x and Offset : %x",++i,extractPageNumber(address),extractOffset(address));
   	}
   }
   fclose(logicalAddressStream);
->>>>>>> 5bcdf9404e63b1385f8bb862f4b0ea1635906afd
   return 0;
 }
