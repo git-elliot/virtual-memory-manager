@@ -6,9 +6,9 @@
 #define OFFSETMASK 0x00FF
 
 int **physicalMemory;
-int physicalMemory = (int**)malloc(sizeof(int*) * 256);
-int physicalMemory[0] = (int*)malloc(sizeof(int) * 256 *256);
-int *pageTable = (int*)malloc(sizeof(int) * 256);
+
+int *pageTable;
+
 uint16_t lastFrameNumber = -1;
 
 unsigned short int extractPageNumber(uint16_t num){
@@ -17,17 +17,7 @@ unsigned short int extractPageNumber(uint16_t num){
 unsigned short int extractOffset(uint16_t num){
   return num & OFFSETMASK;
 }
-uint16_t getFrame(int logicalAddress){
-	uint16_t frameNumber;
-	uint16_t pNo = pageTable[extractPageNumber(logicalAddress)];
-	if(pNo!= -1){
-		frameNumber = pageTable[pNo];
-	}
-	else{
-		frameNumber = retrieveFromStore(pNo);
-	}
-	return frameNumber;
-}
+
 uint16_t retrieveFromStore(uint16_t pNo){
 		FILE *backingStore = fopen("backingStore.txt","rb");
 		int *buffer = (int*)malloc(256);
@@ -40,8 +30,26 @@ uint16_t retrieveFromStore(uint16_t pNo){
 		}
 		return lastFrameNumber;
 }
+uint16_t getFrame(int logicalAddress){
+	uint16_t frameNumber;
+	uint16_t pNo = pageTable[extractPageNumber(logicalAddress)];
+	if(pNo!= -1){
+		frameNumber = pageTable[pNo];
+	}
+	else{
+		frameNumber = retrieveFromStore(pNo);
+	}
+	return frameNumber;
+}
 
 int main(){
+
+  physicalMemory = (int **) malloc(sizeof(int *) * 256);
+  
+
+  printf("\nWorks till here "); // used for debugging
+  pageTable = (int *) malloc(sizeof(256) * 256);
+
   uint16_t logicalAddress;
   FILE *logicalAddressStream;
   int i=0;
@@ -50,6 +58,7 @@ int main(){
   uint16_t offset;
 
   for(int i=0;i<256;i++){
+  	physicalMemory[i] = (int*)malloc(sizeof(int)*256);
   	pageTable[i] = -1;
   }
 
