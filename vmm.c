@@ -9,6 +9,7 @@ int extractFrameNumber(int num){
 }
 int main(){
   int address;
+
   printf("Enter a address\n");
   scanf("%d",&address);
   printf("\nPage number : %d and Frame Number : %d",extractPageNumber(address),extractFrameNumber(address));
