@@ -14,7 +14,7 @@ int main(){
   uint16_t address;
 
   printf("Enter a address\n");
-  scanf("%hu\n",&address);
+  scanf("%hu",&address);
   printf("\nPage number : %hu and Offset : %hu",extractPageNumber(address),extractOffset(address));
   return 0;
 }
