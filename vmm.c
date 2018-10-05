@@ -1,16 +1,16 @@
 #include <stdio.h>
-#define PAGEMASK 240
-#define FRAMEMASK 15
+#define PAGEMASK 0xFF00
+#define OFFSETMASK 0x00FF
 int extractPageNumber(int num){
   return num & PAGEMASK;
 }
-int extractFrameNumber(int num){
-  return num & FRAMEMASK;
+int extractOffset(int num){
+  return num & OFFSETMASK;
 }
 int main(){
   int address;
   printf("Enter a address\n");
-  scanf("%d",&address);
-  printf("\nPage number : %d and Frame Number : %d",extractPageNumber(address),extractFrameNumber(address));
+  scanf("%x",&address);
+  printf("\nPage number : %x and Offset : %x",extractPageNumber(address),extractOffset(address));
   return 0;
 }
