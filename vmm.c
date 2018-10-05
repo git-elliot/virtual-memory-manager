@@ -22,7 +22,7 @@ int main(){
   	exit(1);
   }
   else{
-  	while(fscanf(logicalAddressStream,"%x",&address) != EOF){
+  	while(fscanf(logicalAddressStream,"%hx",&address) != EOF){
   		  printf("\n%dPage number : %x and Offset : %x",++i,extractPageNumber(address),extractOffset(address));
   	}
   }
