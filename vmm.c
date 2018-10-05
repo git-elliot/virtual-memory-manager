@@ -9,7 +9,7 @@ int **physicalMemory;
 
 int *pageTable;
 
-uint16_t lastFrameNumber = -1;
+int lastFrameNumber = -1;
 
 unsigned short int extractPageNumber(uint16_t num){
   return (num & PAGEMASK) >> 8;
@@ -18,7 +18,7 @@ unsigned short int extractOffset(uint16_t num){
   return num & OFFSETMASK;
 }
 
-uint16_t retrieveFromStore(int pNo){
+int retrieveFromStore(int pNo){
 		FILE *backingStore = fopen("backingStore.txt","rb");
 		int *buffer = (int*)malloc(256);
 
@@ -26,20 +26,21 @@ uint16_t retrieveFromStore(int pNo){
 		fread(buffer,1,8,backingStore);
 
 		lastFrameNumber++;
-		
+
 		for(int i=0;i<256;i++){
 			physicalMemory[lastFrameNumber][i] = buffer[i];
 		}
 		return lastFrameNumber;
 }
-uint16_t getFrame(int logicalAddress){
-	uint16_t frameNumber = -1;
-	int pNo = pageTable[extractPageNumber(logicalAddress)];
-	if(pNo!= -1){
+int getFrame(int logicalAddress){
+	int frameNumber = -1;
+	int pNo = extractPageNumber(logicalAddress);
+	if(pageTable[pNo]!= -1){
 		frameNumber = pageTable[pNo];
 	}
 	else{
 		frameNumber = retrieveFromStore(pNo);
+		pageTable[pNo] = frameNumber;
 	}
 	return frameNumber;
 }
@@ -53,7 +54,7 @@ int main(){
   uint16_t logicalAddress;
   FILE *logicalAddressStream;
   int i=0;
-  uint16_t frameNumber;
+  int frameNumber;
   uint16_t physicalAddress;
   uint16_t offset;
 
@@ -68,13 +69,14 @@ int main(){
   	exit(1);
   }
   else{
-  	while(fscanf(logicalAddressStream,"%hx",&logicalAddress) != EOF){
+  	i=0;
+  	while(fscanf(logicalAddressStream,"%hx",&logicalAddress) != EOF && i<256){
   		  // printf("\n%dPage number : %x and Offset : %x",++i,extractPageNumber(logicalAddress),extractOffset(logicalAddress));
   		frameNumber = getFrame(logicalAddress);
   		offset = extractOffset(logicalAddress);
   		physicalAddress = (frameNumber << 8) + offset;
-
-  		printf("LA: %hx, PA: %hx, Data: %d\n",logicalAddress,physicalAddress,physicalMemory[frameNumber][offset]);
+  		i++;
+  		printf("%d> LA: %hx, PA: %hx, Data: %d\n",i,logicalAddress,physicalAddress,physicalMemory[frameNumber][offset]);
   	}
   }
   fclose(logicalAddressStream);
