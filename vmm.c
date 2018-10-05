@@ -1,17 +1,20 @@
 #include <stdio.h>
+#include <stdint.h>
+
 #define PAGEMASK 0xFF00
 #define OFFSETMASK 0x00FF
-int extractPageNumber(int num){
+
+int extractPageNumber(uint16_t num){
   return num & PAGEMASK;
 }
-int extractOffset(int num){
+int extractOffset(uint16_t num){
   return num & OFFSETMASK;
 }
 int main(){
-  int address;
+  uint16_t address;
 
   printf("Enter a address\n");
-  scanf("%x",&address);
-  printf("\nPage number : %x and Offset : %x",extractPageNumber(address),extractOffset(address));
+  scanf("%hu\n",&address);
+  printf("\nPage number : %hu and Offset : %hu",extractPageNumber(address),extractOffset(address));
   return 0;
 }
