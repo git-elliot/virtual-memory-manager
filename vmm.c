@@ -18,16 +18,10 @@ uint8_t extractOffset(uint16_t num){
   return num & OFFSETMASK;
 }
 
-<<<<<<< HEAD
 uint8_t retrieveFromStore(uint8_t pNo){
 	   
 		FILE *backingStore = fopen("BackingStore.txt","rb");
 		uint8_t *buffer = (uint8_t*)malloc(256);
-=======
-uint16_t retrieveFromStore(int pNo){
-		FILE *backingStore = fopen("backingStore.txt","rb");
-		int *buffer = (int*)malloc(256);
->>>>>>> 881c716ee202747612ef0a05fd4751f76e093c7d
 
 		fseek(backingStore,pNo*256,SEEK_SET);
 		fread(buffer,1,8,backingStore);
@@ -41,23 +35,13 @@ uint16_t retrieveFromStore(int pNo){
 		fclose(backingStore);
 		return lastFrameNumber;
 }
-<<<<<<< HEAD
+
 uint8_t getFrame(uint16_t logicalAddress){
 	uint8_t pNo = extractPageNumber(logicalAddress);
 	uint8_t frameNumber = pageTable[pNo];
 	
 	if(frameNumber == 0){
-		return retrieveFromStore(pNo); 
-=======
-uint16_t getFrame(int logicalAddress){
-	uint16_t frameNumber = -1;
-	int pNo = pageTable[extractPageNumber(logicalAddress)];
-	if(pNo!= -1){
-		frameNumber = pageTable[pNo];
-	}
-	else{
-		frameNumber = retrieveFromStore(pNo);
->>>>>>> 881c716ee202747612ef0a05fd4751f76e093c7d
+		return retrieveFromStore(pNo);
 	}
 	return frameNumber;
 }
@@ -66,29 +50,15 @@ int main(){
 
   physicalMemory = (uint8_t **) malloc(sizeof(uint8_t *) * 256);
   
-<<<<<<< HEAD
 
   pageTable = (uint8_t *) malloc(sizeof(uint8_t) * 256);
-  if(pageTable == NULL){
-  	printf("Out of memory for page table\n");
-  	exit(1);
-  }
-=======
-  pageTable = (int *) malloc(sizeof(256) * 256);
->>>>>>> 881c716ee202747612ef0a05fd4751f76e093c7d
-
+ 
   uint16_t logicalAddress;
   FILE *logicalAddressStream;
   int i=0;
-<<<<<<< HEAD
   uint8_t frameNumber;
   uint16_t physicalAddress;
   uint8_t offset;
-=======
-  uint16_t frameNumber;
-  uint16_t physicalAddress;
-  uint16_t offset;
->>>>>>> 881c716ee202747612ef0a05fd4751f76e093c7d
 
   for(int i=0;i<256;i++){
   	physicalMemory[i] = (uint8_t*)malloc(sizeof(uint8_t)*256);
