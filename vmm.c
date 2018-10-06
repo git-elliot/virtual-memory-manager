@@ -35,12 +35,12 @@ int retrieveFromStore(int pNo){
 		}
 		return lastFrameNumber;
 }
-int getFrame(int logicalAddress,FILE* backingStore){
+int getFrame(int logicalAddress){
 	int frameNumber = -1;
 	int pNo = extractPageNumber(logicalAddress);
     frameNumber = pageTable[pNo];
-
-	if(frameNumber== -1){
+ 
+	if(frameNumber == -1){
 		numberOfPageFaults++;
 		frameNumber = retrieveFromStore(pNo);
 		pageTable[pNo] = frameNumber;
@@ -53,7 +53,7 @@ int main(){
 
   physicalMemory = (int **) malloc(sizeof(int *) * 256);
   
-  pageTable = (int *) malloc(sizeof(256) * 256);
+  pageTable = (int *) malloc(sizeof(int) * 256);
 
   uint16_t logicalAddress;
   int i=0;
@@ -62,7 +62,7 @@ int main(){
   uint16_t offset;
 
   for(int i=0;i<256;i++){
-  	physicalMemory[i] = (int*)malloc(sizeof(int)*256);
+  	physicalMemory[i] = (int*)malloc(256);
   	pageTable[i] = -1;
   }
 
@@ -76,7 +76,7 @@ int main(){
   	i=0;
   	while(fscanf(logicalAddressStream,"%hx",&logicalAddress) != EOF && i<256){
   		  // printf("\n%dPage number : %x and Offset : %x",++i,extractPageNumber(logicalAddress),extractOffset(logicalAddress));
-  		frameNumber = getFrame(logicalAddress,backingStore);
+  		frameNumber = getFrame(logicalAddress);
   		offset = extractOffset(logicalAddress);
   		physicalAddress = (frameNumber << 8) + offset;
   		i++;
