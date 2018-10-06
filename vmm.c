@@ -35,7 +35,7 @@ int retrieveFromStore(int pNo){
 		}
 		return lastFrameNumber;
 }
-int getFrame(int logicalAddress,FILE* backingStore){
+int getFrame(int logicalAddress){
 	int frameNumber = -1;
 	int pNo = extractPageNumber(logicalAddress);
     frameNumber = pageTable[pNo];
@@ -69,13 +69,13 @@ int main(){
   logicalAddressStream = fopen("address.txt","r");
   backingStore = fopen("BackingStore.txt","rb");
   if(logicalAddressStream == NULL || backingStore == NULL){
-  	printf("Error opening the address file/backing store");
+  	printf("\nError opening the address file/backing store\n");
   	exit(1);
   }
   else{
   	i=0;
   	while(fscanf(logicalAddressStream,"%hx",&logicalAddress) != EOF && i<256){
-  		frameNumber = getFrame(logicalAddress,backingStore);
+  		frameNumber = getFrame(logicalAddress);
   		offset = extractOffset(logicalAddress);
   		physicalAddress = (frameNumber << 8) + offset;
   		i++;
