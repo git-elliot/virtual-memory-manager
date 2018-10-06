@@ -25,15 +25,20 @@ unsigned short int extractOffset(uint16_t num){
 int retrieveFromStore(int pNo){
 		int *buffer = (int*)malloc(256);
 
-		fseek(backingStore,pNo*256,SEEK_SET);
-		fread(buffer,1,8,backingStore);
+		int seekCheck = fseek(backingStore,pNo*256,SEEK_SET);
+		if(seekCheck == 0){
+			fread(buffer,1,256,backingStore);
+			lastFrameNumber++;
 
-		lastFrameNumber++;
-
-		for(int i=0;i<256;i++){
-			physicalMemory[lastFrameNumber][i] = buffer[i];
+			for(int i=0;i<256;i++){
+				physicalMemory[lastFrameNumber][i] = buffer[i];
+			}
+			return lastFrameNumber;
 		}
-		return lastFrameNumber;
+		else{
+			printf("Seek error\n");
+		}
+		return -1;
 }
 int getFrame(int logicalAddress){
 	int frameNumber = -1;
@@ -52,13 +57,8 @@ int getFrame(int logicalAddress){
 int main(){
 
   physicalMemory = (int **) malloc(sizeof(int *) * 256);
-<<<<<<< HEAD
   
   pageTable = (int *) malloc(sizeof(int) * 256);
-=======
-
-  pageTable = (int *) malloc(sizeof(256) * 256);
->>>>>>> 1f6a184b7f2946fb7fd9a0e755fe6a2115ad2ec1
 
   uint16_t logicalAddress;
   int i=0;
@@ -80,10 +80,7 @@ int main(){
   else{
   	i=0;
   	while(fscanf(logicalAddressStream,"%hx",&logicalAddress) != EOF && i<256){
-<<<<<<< HEAD
-  		  // printf("\n%dPage number : %x and Offset : %x",++i,extractPageNumber(logicalAddress),extractOffset(logicalAddress));
-=======
->>>>>>> 1f6a184b7f2946fb7fd9a0e755fe6a2115ad2ec1
+
   		frameNumber = getFrame(logicalAddress);
   		offset = extractOffset(logicalAddress);
   		physicalAddress = (frameNumber << 8) + offset;
