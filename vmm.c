@@ -10,7 +10,8 @@ int **physicalMemory;
 int *pageTable;
 
 int lastFrameNumber = -1;
-
+FILE *logicalAddressStream;
+FILE *backingStore;
 unsigned short int extractPageNumber(uint16_t num){
   return (num & PAGEMASK) >> 8;
 }
@@ -19,7 +20,7 @@ unsigned short int extractOffset(uint16_t num){
 }
 
 int retrieveFromStore(int pNo){
-		FILE *backingStore = fopen("backingStore.txt","rb");
+		
 		int *buffer = (int*)malloc(256);
 
 		fseek(backingStore,pNo*256,SEEK_SET);
@@ -35,10 +36,8 @@ int retrieveFromStore(int pNo){
 int getFrame(int logicalAddress){
 	int frameNumber = -1;
 	int pNo = extractPageNumber(logicalAddress);
-	if(pageTable[pNo]!= -1){
-		frameNumber = pageTable[pNo];
-	}
-	else{
+    frameNumber = pageTable[pNo];
+	if(frameNumber== -1){
 		frameNumber = retrieveFromStore(pNo);
 		pageTable[pNo] = frameNumber;
 	}
@@ -52,7 +51,7 @@ int main(){
   pageTable = (int *) malloc(sizeof(256) * 256);
 
   uint16_t logicalAddress;
-  FILE *logicalAddressStream;
+  
   int i=0;
   int frameNumber;
   uint16_t physicalAddress;
@@ -62,7 +61,12 @@ int main(){
   	physicalMemory[i] = (int*)malloc(sizeof(int)*256);
   	pageTable[i] = -1;
   }
-
+ 
+  backingStore = fopen("BackingStore.txt","rb");
+  if(backingStore==NULL){
+ 	printf("Unable to load backingstore file\n");
+	exit(1);
+  }
   logicalAddressStream = fopen("address.txt","r");
   if(logicalAddressStream == NULL){
   	printf("Error opening the address file");
@@ -80,5 +84,6 @@ int main(){
   	}
   }
   fclose(logicalAddressStream);
+  fclose(backingStore);
   return 0;
 }
