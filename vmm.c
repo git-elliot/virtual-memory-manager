@@ -12,6 +12,7 @@ int *pageTable;
 int lastFrameNumber = -1;
 FILE *logicalAddressStream;
 FILE *backingStore;
+int numberOfPageFaults=0;
 unsigned short int extractPageNumber(uint16_t num){
   return (num & PAGEMASK) >> 8;
 }
@@ -37,10 +38,13 @@ int getFrame(int logicalAddress){
 	int frameNumber = -1;
 	int pNo = extractPageNumber(logicalAddress);
     frameNumber = pageTable[pNo];
+
 	if(frameNumber== -1){
+		numberOfPageFaults++;
 		frameNumber = retrieveFromStore(pNo);
 		pageTable[pNo] = frameNumber;
 	}
+
 	return frameNumber;
 }
 
@@ -83,6 +87,7 @@ int main(){
   		printf("%d> LA: %hx, PA: %hx, Data: %d\n",i,logicalAddress,physicalAddress,physicalMemory[frameNumber][offset]);
   	}
   }
+  printf("Number of Page Faults : %d\n",numberOfPageFaults);
   fclose(logicalAddressStream);
   fclose(backingStore);
   return 0;
