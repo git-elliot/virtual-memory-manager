@@ -22,7 +22,7 @@ unsigned short int extractOffset(uint16_t num){
   return num & OFFSETMASK;
 }
 
-int retrieveFromStore(int pNo,FILE *backingStore){
+int retrieveFromStore(int pNo){
 		int *buffer = (int*)malloc(256);
 
 		fseek(backingStore,pNo*256,SEEK_SET);
