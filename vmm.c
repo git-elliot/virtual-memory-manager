@@ -10,13 +10,11 @@ int **physicalMemory;
 int *pageTable;
 
 int lastFrameNumber = -1;
-<<<<<<< HEAD
+
 FILE *logicalAddressStream;
 FILE *backingStore;
 int numberOfPageFaults=0;
-=======
 
->>>>>>> ed4ab856863f8e5cd2364ad3dfee76d022c88834
 unsigned short int extractPageNumber(uint16_t num){
   return (num & PAGEMASK) >> 8;
 }
@@ -40,19 +38,11 @@ int retrieveFromStore(int pNo,FILE *backingStore){
 int getFrame(int logicalAddress,FILE* backingStore){
 	int frameNumber = -1;
 	int pNo = extractPageNumber(logicalAddress);
-<<<<<<< HEAD
     frameNumber = pageTable[pNo];
 
 	if(frameNumber== -1){
 		numberOfPageFaults++;
 		frameNumber = retrieveFromStore(pNo);
-=======
-	if(pageTable[pNo]!= -1){
-		frameNumber = pageTable[pNo];
-	}
-	else{
-		frameNumber = retrieveFromStore(pNo,backingStore);
->>>>>>> ed4ab856863f8e5cd2364ad3dfee76d022c88834
 		pageTable[pNo] = frameNumber;
 	}
 
@@ -66,8 +56,6 @@ int main(){
   pageTable = (int *) malloc(sizeof(256) * 256);
 
   uint16_t logicalAddress;
-  FILE *logicalAddressStream;
-  FILE *backingStore;
   int i=0;
   int frameNumber;
   uint16_t physicalAddress;
