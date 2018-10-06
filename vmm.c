@@ -52,8 +52,13 @@ int getFrame(int logicalAddress){
 int main(){
 
   physicalMemory = (int **) malloc(sizeof(int *) * 256);
+<<<<<<< HEAD
   
   pageTable = (int *) malloc(sizeof(int) * 256);
+=======
+
+  pageTable = (int *) malloc(sizeof(256) * 256);
+>>>>>>> 1f6a184b7f2946fb7fd9a0e755fe6a2115ad2ec1
 
   uint16_t logicalAddress;
   int i=0;
@@ -69,13 +74,16 @@ int main(){
   logicalAddressStream = fopen("address.txt","r");
   backingStore = fopen("BackingStore.txt","rb");
   if(logicalAddressStream == NULL || backingStore == NULL){
-  	printf("Error opening the address file/backing store");
+  	printf("\nError opening the address file/backing store\n");
   	exit(1);
   }
   else{
   	i=0;
   	while(fscanf(logicalAddressStream,"%hx",&logicalAddress) != EOF && i<256){
+<<<<<<< HEAD
   		  // printf("\n%dPage number : %x and Offset : %x",++i,extractPageNumber(logicalAddress),extractOffset(logicalAddress));
+=======
+>>>>>>> 1f6a184b7f2946fb7fd9a0e755fe6a2115ad2ec1
   		frameNumber = getFrame(logicalAddress);
   		offset = extractOffset(logicalAddress);
   		physicalAddress = (frameNumber << 8) + offset;
