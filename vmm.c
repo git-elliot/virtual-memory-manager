@@ -52,7 +52,7 @@ int getFrame(int logicalAddress,FILE* backingStore){
 int main(){
 
   physicalMemory = (int **) malloc(sizeof(int *) * 256);
-  
+
   pageTable = (int *) malloc(sizeof(256) * 256);
 
   uint16_t logicalAddress;
@@ -75,7 +75,6 @@ int main(){
   else{
   	i=0;
   	while(fscanf(logicalAddressStream,"%hx",&logicalAddress) != EOF && i<256){
-  		  // printf("\n%dPage number : %x and Offset : %x",++i,extractPageNumber(logicalAddress),extractOffset(logicalAddress));
   		frameNumber = getFrame(logicalAddress,backingStore);
   		offset = extractOffset(logicalAddress);
   		physicalAddress = (frameNumber << 8) + offset;
