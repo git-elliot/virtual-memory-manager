@@ -18,8 +18,7 @@ unsigned short int extractOffset(uint16_t num){
   return num & OFFSETMASK;
 }
 
-int retrieveFromStore(int pNo){
-		FILE *backingStore = fopen("backingStore.txt","rb");
+int retrieveFromStore(int pNo,FILE *backingStore){
 		int *buffer = (int*)malloc(256);
 
 		fseek(backingStore,pNo*256,SEEK_SET);
@@ -32,14 +31,14 @@ int retrieveFromStore(int pNo){
 		}
 		return lastFrameNumber;
 }
-int getFrame(int logicalAddress){
+int getFrame(int logicalAddress,FILE* backingStore){
 	int frameNumber = -1;
 	int pNo = extractPageNumber(logicalAddress);
 	if(pageTable[pNo]!= -1){
 		frameNumber = pageTable[pNo];
 	}
 	else{
-		frameNumber = retrieveFromStore(pNo);
+		frameNumber = retrieveFromStore(pNo,backingStore);
 		pageTable[pNo] = frameNumber;
 	}
 	return frameNumber;
@@ -53,6 +52,7 @@ int main(){
 
   uint16_t logicalAddress;
   FILE *logicalAddressStream;
+  FILE *backingStore;
   int i=0;
   int frameNumber;
   uint16_t physicalAddress;
@@ -64,15 +64,16 @@ int main(){
   }
 
   logicalAddressStream = fopen("address.txt","r");
-  if(logicalAddressStream == NULL){
-  	printf("Error opening the address file");
+  backingStore = fopen("BackingStore.txt","rb");
+  if(logicalAddressStream == NULL || backingStore == NULL){
+  	printf("Error opening the address file/backing store");
   	exit(1);
   }
   else{
   	i=0;
   	while(fscanf(logicalAddressStream,"%hx",&logicalAddress) != EOF && i<256){
   		  // printf("\n%dPage number : %x and Offset : %x",++i,extractPageNumber(logicalAddress),extractOffset(logicalAddress));
-  		frameNumber = getFrame(logicalAddress);
+  		frameNumber = getFrame(logicalAddress,backingStore);
   		offset = extractOffset(logicalAddress);
   		physicalAddress = (frameNumber << 8) + offset;
   		i++;
@@ -80,5 +81,6 @@ int main(){
   	}
   }
   fclose(logicalAddressStream);
+  fclose(backingStore);
   return 0;
 }
