@@ -1,70 +1,67 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <inttypes.h>
+#include<stdlib.h>
+
 #define PAGEMASK 0xFF00
 #define OFFSETMASK 0x00FF
 
-uint8_t **physicalMemory;
+int **physicalMemory;
 
-uint8_t *pageTable;
-int numberOfPageFaults=0;
-uint8_t lastFrameNumber = 0;
+int *pageTable;
 
-uint8_t extractPageNumber(uint16_t num){
+int lastFrameNumber = -1;
+
+unsigned short int extractPageNumber(uint16_t num){
   return (num & PAGEMASK) >> 8;
 }
-uint8_t extractOffset(uint16_t num){
+unsigned short int extractOffset(uint16_t num){
   return num & OFFSETMASK;
 }
 
-uint8_t retrieveFromStore(uint8_t pNo){
-	   
-		FILE *backingStore = fopen("BackingStore.txt","rb");
-		uint8_t *buffer = (uint8_t*)malloc(256);
+int retrieveFromStore(int pNo){
+		FILE *backingStore = fopen("backingStore.txt","rb");
+		int *buffer = (int*)malloc(256);
 
 		fseek(backingStore,pNo*256,SEEK_SET);
 		fread(buffer,1,8,backingStore);
 
 		lastFrameNumber++;
-		
+
 		for(int i=0;i<256;i++){
 			physicalMemory[lastFrameNumber][i] = buffer[i];
 		}
-		pageTable[pNo]= lastFrameNumber;
-		fclose(backingStore);
 		return lastFrameNumber;
 }
-
-uint8_t getFrame(uint16_t logicalAddress){
-	uint8_t pNo = extractPageNumber(logicalAddress);
-	uint8_t frameNumber = pageTable[pNo];
-	
-	if(frameNumber == 0){
-		return retrieveFromStore(pNo);
+int getFrame(int logicalAddress){
+	int frameNumber = -1;
+	int pNo = extractPageNumber(logicalAddress);
+	if(pageTable[pNo]!= -1){
+		frameNumber = pageTable[pNo];
+	}
+	else{
+		frameNumber = retrieveFromStore(pNo);
+		pageTable[pNo] = frameNumber;
 	}
 	return frameNumber;
 }
 
 int main(){
 
-  physicalMemory = (uint8_t **) malloc(sizeof(uint8_t *) * 256);
+  physicalMemory = (int **) malloc(sizeof(int *) * 256);
   
+  pageTable = (int *) malloc(sizeof(256) * 256);
 
-  pageTable = (uint8_t *) malloc(sizeof(uint8_t) * 256);
- 
   uint16_t logicalAddress;
   FILE *logicalAddressStream;
   int i=0;
-  uint8_t frameNumber;
+  int frameNumber;
   uint16_t physicalAddress;
-  uint8_t offset;
+  uint16_t offset;
 
   for(int i=0;i<256;i++){
-  	physicalMemory[i] = (uint8_t*)malloc(sizeof(uint8_t)*256);
-    pageTable[i] =0;
+  	physicalMemory[i] = (int*)malloc(sizeof(int)*256);
+  	pageTable[i] = -1;
   }
-  
 
   logicalAddressStream = fopen("address.txt","r");
   if(logicalAddressStream == NULL){
@@ -72,16 +69,16 @@ int main(){
   	exit(1);
   }
   else{
-  	while(fscanf(logicalAddressStream,"%hu",&logicalAddress) != EOF){
+  	i=0;
+  	while(fscanf(logicalAddressStream,"%hx",&logicalAddress) != EOF && i<256){
   		  // printf("\n%dPage number : %x and Offset : %x",++i,extractPageNumber(logicalAddress),extractOffset(logicalAddress));
   		frameNumber = getFrame(logicalAddress);
   		offset = extractOffset(logicalAddress);
   		physicalAddress = (frameNumber << 8) + offset;
-
-  	//	printf("LA: %u, PA: %u, Data: %d\n",logicalAddress,physicalAddress,physicalMemory[frameNumber][offset]);
+  		i++;
+  		printf("%d> LA: %hx, PA: %hx, Data: %d\n",i,logicalAddress,physicalAddress,physicalMemory[frameNumber][offset]);
   	}
   }
   fclose(logicalAddressStream);
-  printf("\nNo. of page faults occured : %d\n",numberOfPageFaults);
   return 0;
 }
